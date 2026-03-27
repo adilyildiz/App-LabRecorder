@@ -121,12 +121,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="previewButton">
-         <property name="enabled"><bool>false</bool></property>
-         <property name="text"><string>Preview</string></property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -359,7 +353,6 @@
   <tabstop>selectAllButton</tabstop>
   <tabstop>selectNoneButton</tabstop>
   <tabstop>refreshButton</tabstop>
-  <tabstop>previewButton</tabstop>
   <tabstop>rootEdit</tabstop>
   <tabstop>rootBrowseButton</tabstop>
   <tabstop>lineEdit_template</tabstop>

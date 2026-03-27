@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QCloseEvent>
 #include <QComboBox>
@@ -11,6 +11,8 @@
 // LSL
 #include <lsl_cpp.h>
 
+#include "streampreviewdialog.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -22,15 +24,17 @@ class StreamItem {
 	
 public:
 	StreamItem(std::string stream_name, std::string stream_type, std::string source_id,
-		std::string hostname, bool required)
-		: name(stream_name), type(stream_type), id(source_id), host(hostname), checked(required) {}
+		std::string hostname, bool required, lsl::stream_info stream_info)
+		: name(stream_name), type(stream_type), id(source_id), host(hostname),
+		  checked(required), info(std::move(stream_info)) {}
 	
-	QString listName() { return QString::fromStdString(name + " (" + host + ")"); }
+	QString listName() const { return QString::fromStdString(name + " (" + host + ")"); }
 	std::string name;
 	std::string type;
 	std::string id;
 	std::string host;
 	bool checked;
+	lsl::stream_info info;
 };
 
 
@@ -59,6 +63,7 @@ private slots:
 	void rcsStartRecording();
 	void rcsStopRecording();
 	void rcsportValueChangedInt(int value);
+	void previewStream();
 
 private:
 	QString replaceFilename(QString fullfile) const;

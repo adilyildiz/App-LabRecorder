@@ -18,3 +18,5 @@ liblsl.deb
 install-qt.sh
 .DS_Store
 
+dist-gui
+dist-cli

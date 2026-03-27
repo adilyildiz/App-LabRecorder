@@ -48,6 +48,15 @@ MainWindow::MainWindow(QWidget *parent, const char *config_file)
 						  "\nLSL library info:" + lsl::library_info();
 		QMessageBox::about(this, "About this app", infostr);
 	});
+	// Preview button only enabled when a stream is selected, and opens a StreamPreviewDialog for the selected stream.
+	connect(ui->streamList, &QListWidget::currentRowChanged, this, [this](int row) {
+		if (row < 0) { ui->previewButton->setEnabled(false); return; }
+		const QString name = ui->streamList->item(row)->text();
+		bool available = std::any_of(knownStreams.begin(), knownStreams.end(),
+			[&name](const StreamItem &k) { return k.listName() == name; });
+		ui->previewButton->setEnabled(available);
+	});
+	connect(ui->previewButton, &QPushButton::clicked, this, &MainWindow::previewStream);
 
     // Signals for Remote Control Socket
 	connect(ui->rcsCheckBox, &QCheckBox::toggled, this, &MainWindow::rcsCheckBoxChanged);
@@ -304,7 +313,7 @@ std::vector<lsl::stream_info> MainWindow::refreshStreams() {
 		}
 		if (!known) {
 			bool found = missingStreams.contains(info_to_listName(s));
-			knownStreams << StreamItem(s.name(), s.type(), s.source_id(), s.hostname(), found);
+			knownStreams << StreamItem(s.name(), s.type(), s.source_id(), s.hostname(), found, s);
 			if (found) { missingStreams.remove(info_to_listName(s)); }
 		}
 	}
@@ -488,6 +497,19 @@ void MainWindow::selectAllStreams() {
 		item->setCheckState(Qt::Checked);
 	}
 }
+void MainWindow::previewStream() {
+	int row = ui->streamList->currentRow();
+	if (row < 0) return;
+	const QString selectedName = ui->streamList->item(row)->text();
+	for (auto &k : knownStreams) {
+		if (k.listName() == selectedName) {
+			auto *dlg = new StreamPreviewDialog(k.info, this);
+			dlg->show();
+			return;
+		}
+	}
+}
+
 
 void MainWindow::selectNoStreams() {
 	for (int i = 0; i < ui->streamList->count(); i++) {
